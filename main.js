@@ -1,63 +1,91 @@
 import "./style.css";
 
-function generarAngulo() {
+// mostrar angulo
+
+function generarAngulo(){
     return Math.floor(Math.random() * 360);
-  }
-  
-  // Función para verificar la cercanía del ángulo adivinado al ángulo objetivo
-  function proximidad(guess, targetAngle) {
-    const difference = Math.abs(guess - targetAngle);
-  
-    if (difference <= 5) {
-      return "Muy caliente";
-    } else if (difference <= 10) {
-      return "caliente";
-    } else if (difference <= 15) {
-      return "frio";
-    } else {
-      return "Frio como pecho de bolso";
-    }
-  }
+    
+}
 
-  function verificarGanador(){
-    const anguloadivinar = parseInt(document.getElementById('anguloadivinar').value);
+document.getElementById('angulo').innerHTML = generarAngulo();
+
+
+// logica del juego
+
+function verificarGanador(){
+    var newDiv = document.createElement('div');
+    const anguloAdivinarInput = document.getElementById('anguloadivinar').value;
+    const anguloAdivinar = anguloAdivinarInput !== '' ? parseInt(anguloAdivinarInput) : 0;
     const angulo = parseInt(document.getElementById('angulo').innerText);
-    let intentosRestantes = parseInt(document.getElementById('intentos').innerText);
+    console.log(angulo);
+    var valor = "";
 
-    let resultado = '';
-
-    if (anguloadivinar === angulo){
-        resultado = 'Adivinaste'
+    if (angulo < anguloAdivinar){
+        valor = "menor";
     }else{
-        const proximidad = proximidad(angulo - anguloadivinar);
-        resultado += proximidad;
+        valor = "mayor";
     }
 
-    if (anguloadivinar < angulo){
-        resultado += 'El angulo es menor'
-        
-    }else {
-        resultado += 'El angulo es mayor'
+
+    if (anguloAdivinar == angulo ){
+        newDiv.innerHTML = 
+        `<div class="d-flex justify-content-center">
+        <p class="m-2 mt-0">${anguloAdivinar}°</p>
+        <div>
+          <p class="m-2 mt-0">${valor}</p>
+        </div>
+        <div>
+          <p class="m-2 mt-0">Ganaste</p>
+        </div>
+      </div>`
+      document.getElementById('anguloadivinar').disabled = true;
+      document.getElementById('enviar').disabled = true;
+
+    }else{
+        newDiv.innerHTML = `
+        <div class="d-flex justify-content-center">
+          <p class="m-2 mt-0">${anguloAdivinar}°</p>
+          <div>
+            <p class="m-2 mt-0">${valor}</p>
+          </div>
+          <div>
+            <p class="m-2 mt-0">${proximidad(angulo, anguloAdivinar)}</p>
+          </div>
+        </div>
+        `;
     }
 
-    intentosRestantes--;
+    document.getElementById('principal').appendChild(newDiv);
 
-    if (intentosRestantes === 0) {
-        resultado += ' Se acabaron tus intentos. El ángulo correcto era ' + angulo + '.';
+
+    let intentos = parseInt(document.getElementById('intentos').innerText)
+
+
+    if (intentos === 1){
+        document.getElementById('intentos').innerHTML = 0;
         document.getElementById('anguloadivinar').disabled = true;
+        document.getElementById('enviar').disabled = true;
+    }else {
+        document.getElementById('intentos').innerHTML = intentos -1;
+    }
+
+    
+
+}
+
+function proximidad(angulo, anguloAdivinar){
+    const diferencia = Math.abs(angulo - anguloAdivinar);
+
+    if (diferencia <= 5) {
+        return "Muy caliente";
+      } else if (diferencia <= 10) {
+        return "Caliente";
+      } else if (diferencia <= 15) {
+        return "Tibio";
       } else {
-        resultado += ' Attempts left: ' + intentosRestantes + '.';
+        return "Frío como pecho de bolso";
       }
 
-      addHistorial(resultado);
+}
 
-
-
-  }
-  
-
-
-
-
-
-
+document.getElementById('enviar').addEventListener('click', verificarGanador);
